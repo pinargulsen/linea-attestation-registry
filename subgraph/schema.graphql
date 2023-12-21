@@ -1,9 +1,9 @@
 type Attestation @entity {
   id: ID!
-  schemaId: Bytes!
+  schema: Schema!
   replacedBy: Bytes!
   attester: Bytes!
-  portal: Bytes!
+  portal: Portal!
   attestedDate: BigInt!
   expirationDate: BigInt!
   revocationDate: BigInt!
@@ -12,7 +12,6 @@ type Attestation @entity {
   subject: Bytes!
   encodedSubject: Bytes!
   attestationData: Bytes!
-  schemaString: String
   decodedData: [String!]
 }
 

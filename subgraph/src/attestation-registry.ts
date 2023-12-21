@@ -15,10 +15,8 @@ export function handleAttestationRegistered(event: AttestationRegisteredEvent): 
 
   incrementAttestationCount(attestationData.portal.toHexString());
 
-  attestation.schemaId = attestationData.schemaId;
   attestation.replacedBy = attestationData.replacedBy;
   attestation.attester = attestationData.attester;
-  attestation.portal = attestationData.portal;
   attestation.attestedDate = attestationData.attestedDate;
   attestation.expirationDate = attestationData.expirationDate;
   attestation.revocationDate = attestationData.revocationDate;
@@ -26,13 +24,15 @@ export function handleAttestationRegistered(event: AttestationRegisteredEvent): 
   attestation.revoked = attestationData.revoked;
   attestation.encodedSubject = attestationData.subject;
   attestation.attestationData = attestationData.attestationData;
+  attestation.schema = attestationData.schemaId.toHex();
+  attestation.portal = attestationData.portal.toHex();
 
   // If the subject looks like an encoded address, decode it to an address
   const tempSubject = ethereum.decode("address", attestationData.subject);
   attestation.subject = tempSubject ? tempSubject.toAddress() : attestationData.subject;
 
   // Get matching Schema
-  const schema = Schema.load(attestationData.schemaId.toHex());
+  const schema = Schema.load(attestation.schema);
 
   if (schema) {
     // Split Schema into a "type fieldName" array
@@ -43,9 +43,6 @@ export function handleAttestationRegistered(event: AttestationRegisteredEvent): 
 
     // Join the types in a single coma-separated string
     const schemaString = schemaTypes.toString();
-
-    // Add this Schema string to the Attestation Entity
-    attestation.schemaString = schemaString;
 
     const encodedData = attestationData.attestationData;
 

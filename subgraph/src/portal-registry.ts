@@ -4,6 +4,7 @@ import {
   IssuerRemoved,
   PortalRegistered as PortalRegisteredEvent,
   PortalRegistry,
+  PortalRevoked as PortalRevokedEvent,
 } from "../generated/PortalRegistry/PortalRegistry";
 import { Counter, Issuer, Portal } from "../generated/schema";
 
@@ -23,6 +24,16 @@ export function handlePortalRegistered(event: PortalRegisteredEvent): void {
   portal.attestationCounter = 0;
 
   portal.save();
+}
+
+export function handlePortalRevoked(event: PortalRevokedEvent): void {
+  const portalId = event.params.portalAddress.toHexString();
+  const portal = Portal.load(portalId);
+
+  if (portal != null) {
+    // Delete the Portal entity
+    store.remove("Portal", portalId);
+  }
 }
 
 export function handleIssuerAdded(event: IssuerAdded): void {

@@ -1,9 +1,9 @@
 import { afterEach, assert, beforeAll, clearStore, createMockedFunction, describe, test } from "matchstick-as";
 import { Address, ethereum } from "@graphprotocol/graph-ts";
 import {
-  PortalRegistered as PortalRegisteredEvent,
   IssuerAdded as IssuerAddedEvent,
   IssuerRemoved as IssuerRemovedEvent,
+  PortalRegistered as PortalRegisteredEvent,
   PortalRegistry,
 } from "../generated/PortalRegistry/PortalRegistry";
 import { newTypedMockEvent } from "matchstick-as/assembly/defaults";
@@ -76,6 +76,20 @@ describe("handlePortalRegistered()", () => {
     assert.fieldEquals("Portal", portalAddress.toHexString(), "name", name);
     assert.fieldEquals("Portal", portalAddress.toHexString(), "description", description);
     assert.fieldEquals("Portal", portalAddress.toHexString(), "attestationCounter", "0");
+  });
+
+  test("Should remove Portal entity", () => {
+    assert.entityCount("Portal", 0);
+
+    const portalRegisteredEvent = createPortalRegisteredEvent(portalAddress, name, description);
+
+    handlePortalRegistered(portalRegisteredEvent);
+
+    assert.entityCount("Portal", 1);
+
+    // handleRevoked
+
+    assert.entityCount("Portal", 0);
   });
 
   test("Should increment the portals Counter", () => {
